@@ -2,7 +2,8 @@ import { int, varchar, mysqlTable, timestamp, datetime,uniqueIndex } from "drizz
 import { sql } from "drizzle-orm";
 
 export const UserSchema = mysqlTable('users', {
-  id: int("id").autoincrement().primaryKey(),
+  // id: int("id").autoincrement().primaryKey(),
+  id: varchar('id', { length: 128 }).primaryKey(),
   // fullName: varchar("name",{ length :100 }).notNull(),
   email: varchar("email",{ length :100 }).notNull(),
   // username: varchar("username",{ length :256 }).notNull(),

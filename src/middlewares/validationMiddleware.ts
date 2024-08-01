@@ -25,3 +25,4 @@ export const validateRegisterInput = (req: Request, res: Response, next: NextFun
   // You can add more validation here (e.g., email format, password strength)
   next();
 };
+

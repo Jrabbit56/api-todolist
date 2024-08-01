@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { AuthService } from '../services/authService';
-import { LoginRequest, RegisterRequest } from '../types/users/auth';
+import { LoginRequest, RegisterRequest ,LogoutRequest} from '../types/users/auth';
+import jwt from 'jsonwebtoken';
 
 export class AuthController {
   private authService: AuthService;
@@ -24,7 +25,7 @@ export class AuthController {
   
       // Send token and user.id in response
       // res.json({ token, userId: user.id });
-      res.json({ userId: user.id });
+      res.json({ userId: user.id ,token});
     } catch (error) {
       console.error('Login error:', error);
       res.status(500).json({ message: 'An error occurred during login' });
@@ -50,4 +51,33 @@ export class AuthController {
       }
     }
   }
+
+
+  logout = async (req: Request<{}, {}, LogoutRequest>, res: Response) => {
+    try {
+      const token = req.headers.authorization?.split(' ')[1];
+      console.log(token);
+      
+
+      if (!token) {
+        return res.status(400).json({ message: 'No token provided' });
+      }
+
+    // Verify the token
+    try {
+      jwt.verify(token, process.env.JWT_SECRET as string);
+    } catch (err) {
+      return res.status(401).json({ message: 'Invalid token' });
+    }
+
+
+      return res.status(200).json({ message: 'Logged out successfully' });
+    } catch (error) {
+      console.error('Logout error:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+
+
+
 }
