@@ -2,12 +2,18 @@
 import { Request, Response } from 'express';
 import { TaskService } from '../services/taskService';
 import { NewTask } from '../db/schema/tasks.schema';
+import { bearerSplitter } from '../utils/bearerSplitter';
+import Token from '../utils/token';
 
 export class TaskController {
 
   static async getByUserId(req: Request, res: Response) {
+    const token = bearerSplitter(req.headers.authorization || '');
+    const payload = Token.decodeToken(token);
+
+    // console.log(payload,"token: " + payload);
     try {
-        const tasks = await TaskService.getTasksByUserId(Number(req.params.userId));
+        const tasks = await TaskService.getTasksByUserId(Number(payload.id as string));
         if (tasks && tasks.length > 0) {
             res.json(tasks);
         } else {
@@ -29,8 +35,13 @@ export class TaskController {
         description: todo,
         createByID: userId, //who created the task
       };
+
+      console.log(taskData,"taskData");
+      
       const task = await TaskService.createTask(taskData);
-      // res.status(201).json(task);
+      console.log(task);
+      
+      //res.status(201).json(task);
       res.status(201).json({
         message: 'Task created successfully',
         success: true,
@@ -55,12 +66,16 @@ export class TaskController {
   //   }
   // }
 
-  static async update(req: Request, res: Response) {
+  static async updateTask(req: Request, res: Response) {
+
+    // const token = bearerSplitter(req.headers.authorization || '');
+    // const payload = Token.decodeToken(token);
+
     try {
       const { id } = req.params;
-      const { todo, isDone } = req.body;
+      const { todo, status } = req.body;
   
-      if (!todo && isDone === undefined) {
+      if (!todo && status === undefined) {
         return res.status(400).json({ error: 'No update data provided' });
       }
   
@@ -69,8 +84,9 @@ export class TaskController {
         updateData.title = todo;
         updateData.description = todo;
       }
-      if (isDone !== undefined) {
-        // updateData.isDone = isDone;
+      
+      if (status !== undefined) {
+        updateData.status = status;
       }
   
       const updatedTask = await TaskService.updateTask(Number(id), updateData);

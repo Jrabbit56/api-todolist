@@ -6,9 +6,14 @@ export class taskModel {
 
     static async create(task: NewTask): Promise<Task> {
         const result = await db.insert(taskTable).values(task);
+
+        console.log(result,"result");
+        
         
         // Fetch the created task
         const createdTask = await db.select().from(taskTable).where(eq(taskTable.id, result.insertId)).limit(1);
+        console.log(createdTask,"2");
+        
         
         return createdTask[0];
       }
