@@ -12,7 +12,8 @@ export class TaskService {
   }
 
   static async updateTask(id: number, task: Partial<NewTask>): Promise<Task | undefined> {
-    return taskModel.update(id, task);
+    await taskModel.update(id, task);
+    return taskModel.getById(id);
   }
 
   static async deleteTask(id: number): Promise<void> {

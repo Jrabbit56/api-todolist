@@ -3,11 +3,8 @@ import jwt from 'jsonwebtoken';
 import { db } from "../db/db";
 import { users } from '../models/user.model';
 import { eq } from 'drizzle-orm';
-// import { v4 as uuidv4 } from 'uuid';
 
 export class AuthService {
-
-  private readonly ACCESS_TOKEN_EXPIRY = process.env.ACCESS_TOKEN_EXPIRY || '15m';
 
   async validateUser(email: string, password: string) {
     const user = await db.select().from(users).where(eq(users.email, email)).limit(1);
@@ -39,7 +36,7 @@ export class AuthService {
       password: hashedPassword,
     });
 
-    // Fetch the newly created user
+    // Fetch the new created user
     const newUser = await db.select({
       id: users.id,
       email: users.email
